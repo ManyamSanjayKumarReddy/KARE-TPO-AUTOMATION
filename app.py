@@ -172,13 +172,13 @@ def main():
 
           # Display filtered data without commas and with row numbers
             filtered_df_without_commas = filtered_df.reset_index(drop=True)
-            st.dataframe(filtered_df_without_commas.style.format("{:}").hide_index())
+            st.dataframe(filtered_df_without_commas.style.format("{:}"))
 
 
             # Allow users to download the filtered data
             st.markdown(download_link(filtered_df, output_file, 'Download Filtered Data'), unsafe_allow_html=True)
 
-            # Calculate and display statistics
+                        # Calculate and display statistics
             st.title('Statistics')
 
             # 1. Total No of Students

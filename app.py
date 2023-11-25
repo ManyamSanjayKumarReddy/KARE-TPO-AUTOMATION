@@ -170,8 +170,10 @@ def main():
             st.write('Filtering completed. Result saved to:', output_file)
             
 
-            # Display filtered data with specific columns
-            st.dataframe(filtered_df)
+          # Display filtered data without commas and with row numbers
+            filtered_df_without_commas = filtered_df.reset_index(drop=True)
+            st.dataframe(filtered_df_without_commas.style.format("{:}").hide_index())
+
 
             # Allow users to download the filtered data
             st.markdown(download_link(filtered_df, output_file, 'Download Filtered Data'), unsafe_allow_html=True)
@@ -187,18 +189,30 @@ def main():
             num_girls = gender_counts.get('Female', 0)
             num_boys = gender_counts.get('Male', 0)
 
+            # Display the general statistics table
+            general_stats_table = pd.DataFrame({
+                'Statistic': ['Total Number of Students', 'Number of Girls', 'Number of Boys'],
+                'Count': [total_students, num_girls, num_boys]
+            })
+
+            # Display the general statistics table
+            st.table(general_stats_table)
+
             # 3. Members from Each Section
             section_counts = filtered_df['UG-Section'].value_counts()
 
-          
-            stats_table = pd.DataFrame({
-                'Statistic': ['Total Number of Students', 'Number of Girls', 'Number of Boys'] + [f'Number of Students in Section {section}' for section in section_counts.index],
-                'Count': [total_students, num_girls, num_boys] + [section_counts.get(section, 0) for section in section_counts.index]
+            # Create a DataFrame for section-wise statistics
+            section_stats_table = pd.DataFrame({
+                'Section': section_counts.index,
+                'Number of Students': section_counts.values
             })
 
-            
-            # Display the table
-            st.table(stats_table)
+            # Add a new column for the percentage of students in each section
+            section_stats_table['Percentage'] = (section_stats_table['Number of Students'] / total_students) * 100
+
+            # Display the section-wise statistics table
+            st.subheader('Section-wise Statistics')
+            st.table(section_stats_table.style.format({'Number of Students': '{:,}', 'Percentage': '{:.2f}%'}).hide_index())
 
             # Display conclusion with bug reporting contact
             st.subheader('Contact')

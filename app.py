@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import base64
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Hardcoded login credentials
 USERNAME = "Admintpo"
@@ -57,7 +59,7 @@ def filter_data(min_10th, max_10th, min_12th, max_12th, min_diploma, max_diploma
         & section_condition
     ]
 
-    return filtered_df[['S.No.', 'Registration', 'Name', 'DOB', 'UG-Section', 'UG-Department', 'UG-Specialization', 'Email']]
+    return filtered_df[['S.No.', 'Registration', 'Name', 'DOB', 'UG-Section', 'UG-Department', 'UG-Specialization', 'Email', 'Gender']]
 
 def download_link(df, filename, linktext):
     csv = df.to_csv(index=False)
@@ -114,6 +116,8 @@ def main():
             """
         )
 
+        
+
         username = st.sidebar.text_input("Username")
         password = st.sidebar.text_input("Password", type="password")
 
@@ -124,12 +128,15 @@ def main():
                 st.experimental_rerun()
             else:
                 st.error("Invalid username or password")
+            
+            
 
     if session_state.login_status:
         st.sidebar.text(f"Logged in as {USERNAME}")
         if st.sidebar.button("Logout"):
             session_state.login_status = False
             st.experimental_rerun()
+            
 
         # Load your dataset
         master = pd.read_csv('master.csv')
@@ -155,18 +162,54 @@ def main():
 
         output_file = st.text_input('Output File Name', 'company_name.csv')
 
+    # Display conclusion with bug reporting contact
+        
         if st.button('Filter'):
             filtered_df = filter_data(min_10th, max_10th, min_12th, max_12th, min_diploma, max_diploma, min_cgpa, max_cgpa, genders, ug_specializations, sections)
 
             # Display results
             st.title('KARE TPO Automation - Filter Result')
             st.write('Filtering completed. Result saved to:', output_file)
+            
 
             # Display filtered data with specific columns
             st.dataframe(filtered_df)
 
             # Allow users to download the filtered data
             st.markdown(download_link(filtered_df, output_file, 'Download Filtered Data'), unsafe_allow_html=True)
+
+            # Calculate and display statistics
+            st.title('Statistics')
+
+            # 1. Total No of Students
+            total_students = len(filtered_df)
+
+            # 2. No of Girls and Boys
+            gender_counts = filtered_df['Gender'].value_counts()
+            num_girls = gender_counts.get('Female', 0)
+            num_boys = gender_counts.get('Male', 0)
+
+            # 3. Members from Each Section
+            section_counts = filtered_df['UG-Section'].value_counts()
+
+          
+            stats_table = pd.DataFrame({
+                'Statistic': ['Total Number of Students', 'Number of Girls', 'Number of Boys'] + [f'Number of Students in Section {section}' for section in section_counts.index],
+                'Count': [total_students, num_girls, num_boys] + [section_counts.get(section, 0) for section in section_counts.index]
+            })
+
+            
+            # Display the table
+            st.table(stats_table)
+
+            # Display conclusion with bug reporting contact
+            st.subheader('Contact')
+            st.write(
+                """
+                Thank you for using KARE TPO Automation. If you encounter any bugs or issues, please contact the admin at +88259 88659.
+                Maintained by Totelligence Solutions.
+                """
+            )
 
 if __name__ == '__main__':
     main()

@@ -204,7 +204,7 @@ def main():
             st.subheader('Contact')
             st.write(
                 """
-                Thank you for using KARE TPO Automation. If you encounter any bugs or issues, please contact the admin at +88259 88659.
+                Thank you for using KARE TPO Automation. If you encounter any bugs or issues, please contact the admin at +91 88259 88659.
                 Maintained by Totelligence Solutions.
                 """
             )

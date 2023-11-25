@@ -2,6 +2,25 @@ import streamlit as st
 import pandas as pd
 import base64
 
+# Hardcoded login credentials
+USERNAME = "Admintpo"
+PASSWORD = "kare2023"
+
+# Function to check login credentials
+def authenticate(username, password):
+    return username == USERNAME and password == PASSWORD
+
+# Define a simple SessionState class
+class SessionState:
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
+
+# Function to get or create the session state
+def get_session():
+    if "session" not in st.session_state:
+        st.session_state.session = SessionState(login_status=False)
+    return st.session_state.session
+
 def filter_data(min_10th, max_10th, min_12th, max_12th, min_diploma, max_diploma, min_cgpa, max_cgpa, genders, ug_specializations, sections):
     # Load your dataset
     master = pd.read_csv('master.csv')
@@ -47,44 +66,107 @@ def download_link(df, filename, linktext):
     return href
 
 def main():
-    st.title('KARE TPO Automation')
+    st.title('Office of Corporate Relations KARE ')
 
-    # Load your dataset
-    master = pd.read_csv('master.csv')
+    # Initialize SessionState
+    session_state = get_session()
 
-    # Input fields
-    min_10th = st.slider('Minimum 10th Percentage', 0.0, 100.0, 0.0)
-    max_10th = st.slider('Maximum 10th Percentage', 0.0, 100.0, 100.0)
-    min_12th = st.slider('Minimum 12th Percentage', 0.0, 100.0, 0.0)
-    max_12th = st.slider('Maximum 12th Percentage', 0.0, 100.0, 100.0)
-    min_diploma = st.slider('Minimum Diploma Percentage', 0.0, 100.0, 0.0)
-    max_diploma = st.slider('Maximum Diploma Percentage', 0.0, 100.0, 100.0)
-    min_cgpa = st.slider('Minimum CGPA', 0.0, 10.0, 0.0)
-    max_cgpa = st.slider('Maximum CGPA', 0.0, 10.0, 10.0)
+    if not session_state.login_status:
+        # Additional content when not logged in
+        st.write(
+            """
+            Welcome to the KARE Placement Office!
 
-    # Checkbox group for gender
-    genders = st.multiselect('Genders', ['Male', 'Female', 'Both'], default='Both')
+            Here, you can explore student data and filter based on various criteria.
 
-    # Checkbox group for UG specialization
-    ug_specializations = st.multiselect('UG Specialization', ['All', 'CSE (Cyber Security)', 'CSE (Artificial Intelligence & Machine Learning)', 'CSE (Internet of Things & Cybersecurity including Blockchain Technology)', 'CSE (Data Science)'], default='All')
+            Login to access advanced features and download filtered data.
 
-    # Dropdown for sections
-    sections = st.selectbox('Sections', ['All','A', 'B', 'C', 'D', 'E', 'F','G','H','I','J','M','N'])
+            If you don't have credentials, please contact the Placement Office.
+            """
+        )
+        
+        with st.expander("Contact Details"):
+            st.write(
+                """
+                **Dr. A Alavudeen**
+                *Director-corporate Relations*
+                Kalasalingam Academy of Research and Education
+                Anand Nagar, Krishnankovil-626126
+                Email: [placements@klu.ac.in](mailto:placements@klu.ac.in)
+                Mobile: +91-9443389276
 
-    output_file = st.text_input('Output File Name', 'comapany_name.csv')
+                **Dr. S P Velmurugan**
+                *University Placement Coordinator*
+                Kalasalingam Academy of Research and Education
+                Anand Nagar, Krishnankovil-626126
+                Email: [placements@klu.ac.in](mailto:placements@klu.ac.in)
+                Mobile: +91-9488335060
+                """
+            )
 
-    if st.button('Filter'):
-        filtered_df = filter_data(min_10th, max_10th, min_12th, max_12th, min_diploma, max_diploma, min_cgpa, max_cgpa, genders, ug_specializations, sections)
+        # Image and additional text
+        st.image('img1.jpg', caption='KARE Placement Office', use_column_width=True)
+        st.write(
+            """
+            Our mission is to connect talented students with opportunities that align with their skills and ambitions.
 
-        # Display results
-        st.title('KARE TPO Automation - Filter Result')
-        st.write('Filtering completed. Result saved to:', output_file)
+            Explore the data to discover the potential of our students.
+            """
+        )
 
-        # Display filtered data with specific columns
-        st.dataframe(filtered_df)
+        username = st.sidebar.text_input("Username")
+        password = st.sidebar.text_input("Password", type="password")
 
-        # Allow users to download the filtered data
-        st.markdown(download_link(filtered_df, output_file, 'Download Filtered Data'), unsafe_allow_html=True)
+        if st.sidebar.button("Login"):
+            if authenticate(username, password):
+                session_state.login_status = True
+                st.success("Login successful! Redirecting to the main page...")
+                st.experimental_rerun()
+            else:
+                st.error("Invalid username or password")
+
+    if session_state.login_status:
+        st.sidebar.text(f"Logged in as {USERNAME}")
+        if st.sidebar.button("Logout"):
+            session_state.login_status = False
+            st.experimental_rerun()
+
+        # Load your dataset
+        master = pd.read_csv('master.csv')
+
+        # Input fields
+        min_10th = st.slider('Minimum 10th Percentage', 0.0, 100.0, 0.0)
+        max_10th = st.slider('Maximum 10th Percentage', 0.0, 100.0, 100.0)
+        min_12th = st.slider('Minimum 12th Percentage', 0.0, 100.0, 0.0)
+        max_12th = st.slider('Maximum 12th Percentage', 0.0, 100.0, 100.0)
+        min_diploma = st.slider('Minimum Diploma Percentage', 0.0, 100.0, 0.0)
+        max_diploma = st.slider('Maximum Diploma Percentage', 0.0, 100.0, 100.0)
+        min_cgpa = st.slider('Minimum CGPA', 0.0, 10.0, 0.0)
+        max_cgpa = st.slider('Maximum CGPA', 0.0, 10.0, 10.0)
+
+        # Checkbox group for gender
+        genders = st.multiselect('Genders', ['Male', 'Female', 'Both'], default='Both')
+
+        # Checkbox group for UG specialization
+        ug_specializations = st.multiselect('UG Specialization', ['All', 'CSE (Cyber Security)', 'CSE (Artificial Intelligence & Machine Learning)', 'CSE (Internet of Things & Cybersecurity including Blockchain Technology)', 'CSE (Data Science)'], default='All')
+
+        # Dropdown for sections
+        sections = st.selectbox('Sections', ['All','A', 'B', 'C', 'D', 'E', 'F','G','H','I','J','M','N'])
+
+        output_file = st.text_input('Output File Name', 'company_name.csv')
+
+        if st.button('Filter'):
+            filtered_df = filter_data(min_10th, max_10th, min_12th, max_12th, min_diploma, max_diploma, min_cgpa, max_cgpa, genders, ug_specializations, sections)
+
+            # Display results
+            st.title('KARE TPO Automation - Filter Result')
+            st.write('Filtering completed. Result saved to:', output_file)
+
+            # Display filtered data with specific columns
+            st.dataframe(filtered_df)
+
+            # Allow users to download the filtered data
+            st.markdown(download_link(filtered_df, output_file, 'Download Filtered Data'), unsafe_allow_html=True)
 
 if __name__ == '__main__':
     main()

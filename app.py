@@ -212,7 +212,7 @@ def main():
 
             # Display the section-wise statistics table
             st.subheader('Section-wise Statistics')
-            st.table(section_stats_table.style.format({'Number of Students': '{:,}', 'Percentage': '{:.2f}%'}).hide_index())
+            st.table(section_stats_table.style.format({'Number of Students': '{:}', 'Percentage': '{:.2f}%'}))
 
             # Display conclusion with bug reporting contact
             st.subheader('Contact')

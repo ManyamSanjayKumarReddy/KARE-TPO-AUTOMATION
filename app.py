@@ -153,7 +153,7 @@ def main():
         genders = st.multiselect('Genders', ['Male', 'Female', 'Both'], default='Both')
 
         # Checkbox group for UG specialization
-        ug_specializations = st.multiselect('UG Specialization', ['All', 'CSE (Cyber Security)', 'CSE (Artificial Intelligence & Machine Learning)', 'CSE (Internet of Things & Cybersecurity including Blockchain Technology)', 'CSE (Data Science)'], default='All')
+        ug_specializations = st.multiselect('UG Specialization', ['All', 'Cyber', 'AIML', 'IOT', 'Data Science'], default='All')
 
         # Dropdown for sections
         sections = st.selectbox('Sections', ['All','A', 'B', 'C', 'D', 'E', 'F','G','H','I','J','M','N'])

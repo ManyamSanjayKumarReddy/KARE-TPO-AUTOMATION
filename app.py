@@ -21,6 +21,9 @@ def get_session():
         st.session_state.session = SessionState(login_status=False)
     return st.session_state.session
 
+def check_column_existence(df, column):
+    return column in df.columns
+
 def filter_data(min_10th, max_10th, min_12th, max_12th, min_diploma, max_diploma, min_cgpa, max_cgpa, genders, ug_specializations, departments, sections, uploaded_file, selected_columns):
     # Load user-uploaded dataset
     master = pd.read_csv(uploaded_file)
@@ -217,61 +220,72 @@ def main():
                 st.table(general_stats_table)
 
                 # 3. Members from Each Section
-                section_counts = filtered_df['UG-Section'].value_counts()
+                if check_column_existence(filtered_df, 'UG-Section'):
+                    section_counts = filtered_df['UG-Section'].value_counts()
 
-                # Create a DataFrame for section-wise statistics
-                section_stats_table = pd.DataFrame({
-                    'Section': section_counts.index,
-                    'Number of Students': section_counts.values
-                })
+                    # Create a DataFrame for section-wise statistics
+                    section_stats_table = pd.DataFrame({
+                        'Section': section_counts.index,
+                        'Number of Students': section_counts.values
+                    })
 
-                # Add a new column for the percentage of students in each section
-                section_stats_table['Percentage'] = (section_stats_table['Number of Students'] / total_students) * 100
+                    # Add a new column for the percentage of students in each section
+                    section_stats_table['Percentage'] = (section_stats_table['Number of Students'] / total_students) * 100
 
-                # Display the section-wise statistics table
-                st.subheader('Section-wise Statistics')
-                st.table(section_stats_table.style.format({'Number of Students': '{:}', 'Percentage': '{:.2f}%'}))
+                    # Display the section-wise statistics table
+                    st.subheader('Section-wise Statistics')
+                    st.table(section_stats_table.style.format({'Number of Students': '{:}', 'Percentage': '{:.2f}%'}))
+                else:
+                    st.warning("Please Include 'UG-Section' in the columns to see more stats.")
 
                 # 4. Members from Each UG Department
-                department_counts = filtered_df['UG-Department'].value_counts()
+                if check_column_existence(filtered_df, 'UG-Department'):
+                    department_counts = filtered_df['UG-Department'].value_counts()
 
-                # Create a DataFrame for department-wise statistics
-                department_stats_table = pd.DataFrame({
-                    'Department': department_counts.index,
-                    'Number of Students': department_counts.values
-                })
+                    # Create a DataFrame for department-wise statistics
+                    department_stats_table = pd.DataFrame({
+                        'Department': department_counts.index,
+                        'Number of Students': department_counts.values
+                    })
 
-                # Add a new column for the percentage of students in each department
-                department_stats_table['Percentage'] = (department_stats_table['Number of Students'] / total_students) * 100
+                    # Add a new column for the percentage of students in each department
+                    department_stats_table['Percentage'] = (department_stats_table['Number of Students'] / total_students) * 100
 
-                # Display the department-wise statistics table
-                st.subheader('Department-wise Statistics')
-                st.table(department_stats_table.style.format({'Number of Students': '{:}', 'Percentage': '{:.2f}%'}))
+                    # Display the department-wise statistics table
+                    st.subheader('Department-wise Statistics')
+                    st.table(department_stats_table.style.format({'Number of Students': '{:}', 'Percentage': '{:.2f}%'}))
+                else:
+                    st.warning("Please include 'UG-Specialization' in the columns to see more stats.")
 
                 # 5. Members from Each UG Specialization
-                ug_spec_counts = filtered_df['UG-Specialization'].value_counts()
+                if check_column_existence(filtered_df, 'UG-Specialization'):
+                    ug_spec_counts = filtered_df['UG-Specialization'].value_counts()
 
-                # Create a DataFrame for UG specialization-wise statistics
-                ug_spec_stats_table = pd.DataFrame({
-                    'UG Specialization': ug_spec_counts.index,
-                    'Number of Students': ug_spec_counts.values
-                })
+                    # Create a DataFrame for UG specialization-wise statistics
+                    ug_spec_stats_table = pd.DataFrame({
+                        'UG Specialization': ug_spec_counts.index,
+                        'Number of Students': ug_spec_counts.values
+                    })
 
-                # Add a new column for the percentage of students in each UG specialization
-                ug_spec_stats_table['Percentage'] = (ug_spec_stats_table['Number of Students'] / total_students) * 100
+                    # Add a new column for the percentage of students in each UG specialization
+                    ug_spec_stats_table['Percentage'] = (ug_spec_stats_table['Number of Students'] / total_students) * 100
 
-                # Display the UG specialization-wise statistics table
-                st.subheader('UG Specialization-wise Statistics')
-                st.table(ug_spec_stats_table.style.format({'Number of Students': '{:}', 'Percentage': '{:.2f}%'}))
-
+                    # Display the UG specialization-wise statistics table
+                    st.subheader('UG Specialization-wise Statistics')
+                    st.table(ug_spec_stats_table.style.format({'Number of Students': '{:}', 'Percentage': '{:.2f}%'}))
+                else:
+                    st.warning("Please include 'UG-Specialization' in the columns to see more stats.")
                 # 6. CGPA Distribution
                 st.subheader('CGPA Distribution')
                 st.write("Distribution of students based on CGPA")
 
                 # 7. Top 3 Students from Each Section based on CGPA
-                st.subheader('Top 3 Students from Each Section based on CGPA')
-                top_students_cgpa = filtered_df.groupby('UG-Section').apply(lambda x: x.nlargest(3, 'CGPA')).reset_index(drop=True)
-                st.table(top_students_cgpa[['UG-Section', 'Name', 'CGPA']].style.format({'CGPA': '{:.2f}'}))
+                if check_column_existence(filtered_df, 'CGPA'):
+                    st.subheader('Top 3 Students from Each Section based on CGPA')
+                    top_students_cgpa = filtered_df.groupby('UG-Section').apply(lambda x: x.nlargest(3, 'CGPA')).reset_index(drop=True)
+                    st.table(top_students_cgpa[['UG-Section', 'Name', 'CGPA']].style.format({'CGPA': '{:.2f}'}))
+                else:
+                    st.warning("Please include CGPA in the Column to see more Stats.")
 
             else:
                 st.warning("Please upload a CSV file.")

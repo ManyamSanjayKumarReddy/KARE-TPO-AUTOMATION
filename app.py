@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import base64
 
-
 # Hardcoded login credentials
 USERNAME = "Admintpo"
 PASSWORD = "kare2023"
@@ -149,7 +148,6 @@ def main():
     if session_state.login_status:
         st.sidebar.text(f"Logged in as {USERNAME}")
 
-        
 
         # Add text and small image in the sidebar
         st.sidebar.markdown(
@@ -163,7 +161,7 @@ def main():
         if st.sidebar.button("Logout"):
             session_state.login_status = False
             st.experimental_rerun()
-
+            
         # Display specific column names in a row within a table in the sidebar
         st.sidebar.subheader("Note that Column Names should be same as below:")
         columns_for_checking = [
@@ -179,7 +177,6 @@ def main():
         st.sidebar.image('sidebar.jpg', use_column_width=True)
 
         
-
         # Upload file through Streamlit
         uploaded_file = st.file_uploader("Upload the Master Data ", type=["csv"])
 

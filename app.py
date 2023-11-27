@@ -139,6 +139,19 @@ def main():
 
     if session_state.login_status:
         st.sidebar.text(f"Logged in as {USERNAME}")
+
+        # Add text and small image in the sidebar
+        st.sidebar.markdown(
+            """
+            Explore and filter student data based on various criteria.
+
+            If you encounter any issues or have questions, feel free to contact Site Owner.
+            """
+        )
+        
+        # Add a small image
+        st.sidebar.image('sidebar.jpg', use_column_width=True)
+
         if st.sidebar.button("Logout"):
             session_state.login_status = False
             st.experimental_rerun()

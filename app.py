@@ -78,6 +78,12 @@ def download_link(df, filename, linktext):
     return href
 
 def main():
+
+    # Set page configuration (favicon and title)
+    st.set_page_config(
+        page_title="TPO Automation KARE",
+        page_icon="kare_logo.png",  
+    )
     st.title('Office of Corporate Relations KARE ')
 
     # Initialize SessionState

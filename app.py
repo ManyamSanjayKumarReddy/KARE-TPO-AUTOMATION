@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import base64
 
+
 # Hardcoded login credentials
 USERNAME = "Admintpo"
 PASSWORD = "kare2023"
@@ -79,6 +80,8 @@ def download_link(df, filename, linktext):
 
 def main():
 
+    
+
     # Set page configuration (favicon and title)
     st.set_page_config(
         page_title="TPO Automation KARE",
@@ -146,6 +149,8 @@ def main():
     if session_state.login_status:
         st.sidebar.text(f"Logged in as {USERNAME}")
 
+        
+
         # Add text and small image in the sidebar
         st.sidebar.markdown(
             """
@@ -154,13 +159,26 @@ def main():
             If you encounter any issues or have questions, feel free to contact Site Owner.
             """
         )
-        
-        # Add a small image
-        st.sidebar.image('sidebar.jpg', use_column_width=True)
 
         if st.sidebar.button("Logout"):
             session_state.login_status = False
             st.experimental_rerun()
+
+        # Display specific column names in a row within a table in the sidebar
+        st.sidebar.subheader("Note that Column Names should be same as below:")
+        columns_for_checking = [
+            'S.No.', 'Registration', 'Name', 'DOB', 'UG-Section', 'UG-Department', 'UG-Specialization', 'Email', 'Gender',
+            'First Name', 'Last Name', 'CGPA', 'Active Backlogs', 'History Arrears', 'Academic Gap',
+            'Diploma-Percentage', 'Diploma-Specialization', '12-Percentage', '10th-Percentage',
+            'Aadhar', 'PAN', 'City', 'City Pincode', 'District', 'State', 'Mobile-1'
+        ]
+        st.sidebar.table(pd.DataFrame(columns_for_checking, columns=["Columns for Checking"]))
+        
+        
+        # Add a small image
+        st.sidebar.image('sidebar.jpg', use_column_width=True)
+
+        
 
         # Upload file through Streamlit
         uploaded_file = st.file_uploader("Upload the Master Data ", type=["csv"])

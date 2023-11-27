@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import base64
-import plotly.express as px
 
 # Hardcoded login credentials
 USERNAME = "Admintpo"
@@ -197,113 +196,83 @@ def main():
                 # Allow users to download the filtered data
                 st.markdown(download_link(filtered_df, output_file, 'Download Filtered Data'), unsafe_allow_html=True)
 
-               
                 # Calculate and display statistics
-                st.title('Statistics and Insights')
+                st.title('Statistics')
 
                 # 1. Total No of Students
                 total_students = len(filtered_df)
 
+                # 2. No of Girls and Boys
+                gender_counts = filtered_df['Gender'].value_counts()
+                num_girls = gender_counts.get('Female', 0)
+                num_boys = gender_counts.get('Male', 0)
+
                 # Display the general statistics table
                 general_stats_table = pd.DataFrame({
-                    'Statistic': ['Total Number of Students'],
-                    'Count': [total_students]
+                    'Statistic': ['Total Number of Students', 'Number of Girls', 'Number of Boys'],
+                    'Count': [total_students, num_girls, num_boys]
                 })
 
                 # Display the general statistics table
                 st.table(general_stats_table)
 
-                # 2. Gender-wise Statistics
-                gender_column = 'Gender'
-                if gender_column in filtered_df.columns:
-                    gender_counts = filtered_df[gender_column].value_counts()
+                # 3. Members from Each Section
+                section_counts = filtered_df['UG-Section'].value_counts()
 
-                    # Display the gender statistics table
-                    gender_stats_table = pd.DataFrame({
-                        'Gender': gender_counts.index,
-                        'Count': gender_counts.values,
-                        'Percentage': (gender_counts / total_students) * 100
-                    })
-                    st.subheader('Gender-wise Statistics')
-                    st.table(gender_stats_table.style.format({'Count': '{:}', 'Percentage': '{:.2f}%'}))
+                # Create a DataFrame for section-wise statistics
+                section_stats_table = pd.DataFrame({
+                    'Section': section_counts.index,
+                    'Number of Students': section_counts.values
+                })
 
-                    # Bar chart for Gender
-                    st.subheader('Gender Distribution')
-                    fig_gender = px.bar(gender_stats_table, x='Gender', y='Count', title='Gender Distribution')
-                    st.plotly_chart(fig_gender)
-                else:
-                    st.warning(f"The '{gender_column}' column is not present in the generated file. Include it to get complete gender-wise statistics.")
+                # Add a new column for the percentage of students in each section
+                section_stats_table['Percentage'] = (section_stats_table['Number of Students'] / total_students) * 100
 
-                # 3. Section-wise Statistics
-                section_column = 'UG-Section'
-                if section_column in filtered_df.columns:
-                    section_counts = filtered_df[section_column].value_counts()
+                # Display the section-wise statistics table
+                st.subheader('Section-wise Statistics')
+                st.table(section_stats_table.style.format({'Number of Students': '{:}', 'Percentage': '{:.2f}%'}))
 
-                    # Create a DataFrame for section-wise statistics
-                    section_stats_table = pd.DataFrame({
-                        'Section': section_counts.index,
-                        'Number of Students': section_counts.values,
-                        'Percentage': (section_counts / total_students) * 100
-                    })
+                # 4. Members from Each UG Department
+                department_counts = filtered_df['UG-Department'].value_counts()
 
-                    # Display the section-wise statistics table
-                    st.subheader('Section-wise Statistics')
-                    st.table(section_stats_table.style.format({'Number of Students': '{:}', 'Percentage': '{:.2f}%'}))
+                # Create a DataFrame for department-wise statistics
+                department_stats_table = pd.DataFrame({
+                    'Department': department_counts.index,
+                    'Number of Students': department_counts.values
+                })
 
-                    # Bar chart for Section
-                    st.subheader('Section Distribution')
-                    fig_section = px.bar(section_stats_table, x='Section', y='Number of Students', title='Section Distribution')
-                    st.plotly_chart(fig_section)
-                else:
-                    st.warning(f"The '{section_column}' column is not present in the generated file. Include it to get complete section-wise statistics.")
+                # Add a new column for the percentage of students in each department
+                department_stats_table['Percentage'] = (department_stats_table['Number of Students'] / total_students) * 100
 
-                # 4. Department-wise Statistics
-                department_column = 'UG-Department'
-                if department_column in filtered_df.columns:
-                    department_counts = filtered_df[department_column].value_counts()
+                # Display the department-wise statistics table
+                st.subheader('Department-wise Statistics')
+                st.table(department_stats_table.style.format({'Number of Students': '{:}', 'Percentage': '{:.2f}%'}))
 
-                    # Create a DataFrame for department-wise statistics
-                    department_stats_table = pd.DataFrame({
-                        'Department': department_counts.index,
-                        'Number of Students': department_counts.values,
-                        'Percentage': (department_counts / total_students) * 100
-                    })
+                # 5. Members from Each UG Specialization
+                ug_spec_counts = filtered_df['UG-Specialization'].value_counts()
 
-                    # Display the department-wise statistics table
-                    st.subheader('Department-wise Statistics')
-                    st.table(department_stats_table.style.format({'Number of Students': '{:}', 'Percentage': '{:.2f}%'}))
+                # Create a DataFrame for UG specialization-wise statistics
+                ug_spec_stats_table = pd.DataFrame({
+                    'UG Specialization': ug_spec_counts.index,
+                    'Number of Students': ug_spec_counts.values
+                })
 
-                    # Bar chart for Department
-                    st.subheader('Department Distribution')
-                    fig_department = px.bar(department_stats_table, x='Department', y='Number of Students', title='Department Distribution')
-                    st.plotly_chart(fig_department)
-                else:
-                    st.warning(f"The '{department_column}' column is not present in the generated file. Include it to get complete department-wise statistics.")
+                # Add a new column for the percentage of students in each UG specialization
+                ug_spec_stats_table['Percentage'] = (ug_spec_stats_table['Number of Students'] / total_students) * 100
 
-                # 5. UG Specialization-wise Statistics
-                ug_spec_column = 'UG-Specialization'
-                if ug_spec_column in filtered_df.columns:
-                    ug_spec_counts = filtered_df[ug_spec_column].value_counts()
+                # Display the UG specialization-wise statistics table
+                st.subheader('UG Specialization-wise Statistics')
+                st.table(ug_spec_stats_table.style.format({'Number of Students': '{:}', 'Percentage': '{:.2f}%'}))
 
-                    # Create a DataFrame for UG specialization-wise statistics
-                    ug_spec_stats_table = pd.DataFrame({
-                        'UG Specialization': ug_spec_counts.index,
-                        'Number of Students': ug_spec_counts.values,
-                        'Percentage': (ug_spec_counts / total_students) * 100
-                    })
+                # 6. CGPA Distribution
+                st.subheader('CGPA Distribution')
+                st.write("Distribution of students based on CGPA")
 
-                    # Display the UG specialization-wise statistics table
-                    st.subheader('UG Specialization-wise Statistics')
-                    st.table(ug_spec_stats_table.style.format({'Number of Students': '{:}', 'Percentage': '{:.2f}%'}))
+                # 7. Top 3 Students from Each Section based on CGPA
+                st.subheader('Top 3 Students from Each Section based on CGPA')
+                top_students_cgpa = filtered_df.groupby('UG-Section').apply(lambda x: x.nlargest(3, 'CGPA')).reset_index(drop=True)
+                st.table(top_students_cgpa[['UG-Section', 'Name', 'CGPA']].style.format({'CGPA': '{:.2f}'}))
 
-                    # Bar chart for UG Specialization
-                    st.subheader('UG Specialization Distribution')
-                    fig_ug_spec = px.bar(ug_spec_stats_table, x='UG Specialization', y='Number of Students', title='UG Specialization Distribution')
-                    st.plotly_chart(fig_ug_spec)
-                else:
-                    st.warning(f"The '{ug_spec_column}' column is not present in the generated file. Include it to get complete UG specialization-wise statistics.")
-
-               
             else:
                 st.warning("Please upload a CSV file.")
 
